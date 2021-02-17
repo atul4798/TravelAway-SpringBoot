@@ -1,0 +1,127 @@
+drop table Booking
+
+select * from Booking
+
+create table Booking(
+BookingId int Primary key IDENTITY(1,1),
+Email varchar(50),
+ContactNumber varchar(10) NOT NULL,
+ResidentialAddress varchar(200) NOT NULL,
+DateofTravel Date NOT NULL,
+NumberofAdults INTEGER NOT NULL,
+NumberofChildren INTEGER DEFAULT 0 NOT NULL,
+BookingStatus varchar(10) Default 'Pending' Check(BookingStatus IN ('Pending','Booked')));
+
+
+insert into Booking(Email,ContactNumber,ResidentialAddress,DateofTravel,NumberofAdults,NumberofChildren,BookingStatus) values('a@fmail.com','8808236022','Patna,Bihar','01-14-2021',1,0,'Booked');
+
+DROP PROCEDURE IF EXISTS dbo.uspBooking;
+GO
+CREATE PROCEDURE dbo.uspBooking(
+@Email varchar(50), 
+@ContactNumber varchar(10),
+@ResidentialAddress varchar(200),
+@DateofTravel Date,
+@NumberofAdults INTEGER,
+@NumberofChildren INTEGER,
+@BookingStatus varchar(10))
+AS
+BEGIN
+Declare @Result int
+BEGIN TRAN
+BEGIN TRY
+    SET NOCOUNT ON;
+    insert into Booking(Email,ContactNumber,ResidentialAddress,DateofTravel,NumberofAdults,NumberofChildren,BookingStatus) values(@Email,@ContactNumber,@ResidentialAddress,@DateofTravel,@NumberofAdults,@NumberofChildren,@BookingStatus);
+    SET @Result=1;
+    COMMIT TRAN;
+END TRY
+   BEGIN CATCH
+    SELECT ERROR_NUMBER() AS ErrorNumber,ERROR_MESSAGE() AS ErrorMessage;
+    ROLLBACK TRAN;
+    SET @Result=0;
+  END CATCH
+Return @Result
+END
+
+
+
+Declare @Result int
+EXEC @Result=dbo.uspBooking @Email='a@gmail.com',@ContactNumber='88082360022',@ResidentialAddress='PATNA BIHAR',@DateofTravel='01-14-2021',@NumberofAdults=1,@NumberofChildren=2,@BookingStatus='Booked'
+select @Result;
+==========================================Get Booking by ID=================2/11/2021=================================================
+
+GO
+CREATE FUNCTION dbo.getBooking (@bid int)  
+RETURNS TABLE  
+AS  
+RETURN
+(
+	select * from Booking where BookingId=@bid
+);
+
+===========================
+select * from dbo.getBooking(1) 
+============================
+
+=====================================Update Booking Status by Booking id====================
+
+
+GO
+CREATE PROCEDURE dbo.UpdateBstatus(
+@BookingId INTEGER 
+)
+AS
+BEGIN
+Declare @Result int
+BEGIN TRY
+	IF NOT EXISTS(SELECT * FROM Booking WHERE BookingId=@BookingId)
+	BEGIN
+	SET @Result=-1
+	Return @Result
+	END
+    SET NOCOUNT ON;
+	UPDATE Booking SET BookingStatus='Booked' 
+	WHERE BookingId=@BookingId;
+    SET @Result=1;
+   
+END TRY
+   BEGIN CATCH
+    SELECT ERROR_NUMBER() AS ErrorNumber,ERROR_MESSAGE() AS ErrorMessage;
+    ROLLBACK TRAN;
+    SET @Result=0;
+  END CATCH
+Return @Result
+END
+
+
+=============================================Delete Booking by Booking ID===================================
+
+GO
+CREATE PROCEDURE dbo.DeleteBooking(
+@BookingId INTEGER 
+)
+AS
+BEGIN
+Declare @Result int
+BEGIN TRY
+	IF NOT EXISTS(SELECT * FROM Booking WHERE BookingId=@BookingId)
+	BEGIN
+	SET @Result=-1
+	Return @Result
+	END
+    SET NOCOUNT ON;
+	DELETE FROM Booking 
+	WHERE BookingId=@BookingId;
+    SET @Result=1;
+   
+END TRY
+   BEGIN CATCH
+    SELECT ERROR_NUMBER() AS ErrorNumber,ERROR_MESSAGE() AS ErrorMessage;
+    ROLLBACK TRAN;
+    SET @Result=0;
+  END CATCH
+Return @Result
+END
+
+
+

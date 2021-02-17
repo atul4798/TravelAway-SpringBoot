@@ -1,0 +1,75 @@
+Services
+==================
+storeBook(email: string, cno: string, address: string, Travel: string, Children: string, Adults: string): Observable<boolean> {
+    var userobj: Ibooking;
+
+    userobj = { email: email, contactNumber: cno, residentialAddress: address, dateofTravel: Travel, numberofAdults: Number(Adults), numberofChildren: Number(Children) }
+
+    return this.http.post<boolean>("https://localhost:44322/travelaway/Booking", userobj).pipe(catchError(this.errorHandler));
+   
+  }
+  errorHandler(error: HttpErrorResponse) {
+    console.error(error);
+    return throwError(error || "Server Error");
+  }
+
+Component
+=======================
+
+booked(form: NgForm) {
+    this.bookservice.storeBook(form.value.email, form.value.cno, form.value.address, form.value.Travel, form.value.Children, form.value.Adults).subscribe(
+      responseBookstatus => {
+        this.status = responseBookstatus;
+        if (this.status != false) {
+          this.msg = "Booking Successfull";
+        }
+        else {
+          this.msg = "Booking Failed.";
+        }
+      },
+      responseBookError => {
+        this.errormsg = responseBookError;
+      },
+      () => console.log("Booking Method Executed Successfully.")
+    );
+   
+  }
+
+
+Imports in app.module.ts
+=======================================
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { BookingComponent } from './Component/booking/booking.component';
+import { NgForm } from '@angular/forms';
+import { FormsModule, NgModel, FormGroup, FormBuilder, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+
+
+
+CORS Policy
+================================
+
+1.Goto your web Services-> open Startup.cs File.
+
+2. Declare a string inside Startup class
+ ==> readonly string AllowedSpecificOrigins="AllowSpecificOrigins";
+
+3. Inside the "ConfigureServices(IserviceCollection services)" method, add the followingline of code in begining of the method:
+
+==>>  services.AddCors(options=>
+	{	
+	  options.AddPolicy(name:AllowedSpecificOrigins,
+		builder=>
+		{
+			builder.AllowAnyOrigin();
+			builder.AllowAnyMethod();
+			builder.AllowAnyHeader();
+		});
+	}); 
+
+4.Inside the "Configure(IApplicationBuilder app,IHostingEnvironment env)" method add the following block of code:
+	app.UseCors(AllowedSpecificOrigins);

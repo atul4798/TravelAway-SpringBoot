@@ -1,0 +1,16 @@
+DATA ACCESS LAYER
+==========================
+
+1.Create new .Net Console APP
+2.Manage Nuget Packages to the .Net Console APP
+	2.a)Microsoft.EntityFrameworkCORE
+	2.b)Microsoft.EntityFrameworkCORE.SqlSqerver
+	2.c)Microsoft.EntityFrameworkCORE.Tools
+
+3.Open Package Manager(View>other Windows>Package Manager Console)
+
+4.Create ConsoleApp For DAL
+
+Scaffolding
+
+Scaffold-DbContext "Data Source=DESKTOP-8VHEI13\SQLEXPRESS2019;Initial Catalog=TravelAwayDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" -Provider Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
