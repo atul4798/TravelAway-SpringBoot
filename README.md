@@ -6,5 +6,5 @@
  2.Install Angular CLI
  3.Install SpringBoot in any IDE(Eclipse,IntelliJ IDEA)
  
- Add Node Modules Files in the AngularUI Files
+ Add Node Modules Files in the AngularUI, 
  Check Connection strings of database and edit in spring boot's Application.properties
